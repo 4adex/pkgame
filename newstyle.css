@@ -1,0 +1,276 @@
+html {
+    font-family: "Press Start 2P";
+    font-size: 12px;
+}
+
+.center {
+    position: absolute;
+    /* padding: 10px; */
+}
+
+#bbg {
+    position: absolute;
+    width: 500px;
+    border: 2px solid;
+    left: 100px;
+}
+
+#upper-container {
+    position: relative;
+    /* border: 1px solid; */
+    margin: auto;
+    margin-top: 20px;
+    width: 700px;
+    height: 320px;
+}
+
+#lower-container {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    /* border: 1px solid; */
+    margin: auto;
+    /* margin-top: 20px; */
+    width: 1000px;
+    height: 100px;
+}
+
+#comment {
+    width: 450px;
+    height: 50px;
+    position: absolute;
+    left: 125px;
+    top: 260px;
+    border-radius: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #000;
+    background: #FBFBFD;
+}
+
+#comment {
+    color: #0E0D11;
+    font-family: "Press Start 2P";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.player {
+    position: absolute;
+    /* top: 180px; */
+    /* left: 400px; */
+    /* width: 157px; */
+    /* height: 75px; */
+    border-radius: 3px;
+    border: 2px solid #000;
+    background: #F3FDD0;
+    padding: 0px 10px;
+}
+
+#player1 {
+    top: 180px;
+    left: 400px;
+}
+
+#player2 {
+    top: 50px;
+    left: 150px;
+}
+
+
+#health_bar1,
+#health_bar2 {
+    position: relative;
+    width: 157px;
+    height: 8px;
+    border-radius: 1px;
+    background: #3A2836;
+}
+
+#healthg2,
+#healthg1 {
+    position: absolute;
+    top: 1px;
+    transition: width 0.3s ease;
+    left: 23px;
+    width: 133px;
+    height: 6px;
+    flex-shrink: 0;
+    background: #6DF170;
+}
+
+#hp2,
+#hp1 {
+    display: flex;
+    justify-content: right;
+}
+
+#pk1 {
+    position: absolute;
+    top: 130px;
+    left: 220px;
+    /* border: 2px solid #000; */
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    transition: transform 0.5s ease-in-out;
+}
+
+@keyframes attackAnimation1 {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translate(150px, -100px);
+        /* Adjust the distance as needed */
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes faintAnimation {
+    0% {
+        transform: translateY(0);
+        opacity: 100%;
+    }
+
+    100% {
+        transform: translateY(50px);
+        opacity: 0%;
+    }
+}
+
+@keyframes switchAnimation {
+    0% {
+        /* transform: translateY(0); */
+        opacity: 0%;
+    }
+
+    100% {
+        /* transform: translateY(-50px); */
+        opacity: 100%;
+    }
+}
+
+.switch-animation {
+    animation: switchAnimation 1s ease-in-out forwards;
+}
+
+
+.faint-animation {
+    animation: faintAnimation 1s ease-in-out forwards;
+}
+
+@keyframes attackAnimation2 {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translate(-150px, 100px);
+        /* Adjust the distance as needed */
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.attack-animation1 {
+    animation: attackAnimation1 1s ease-in-out forwards;
+}
+
+.attack-animation2 {
+    animation: attackAnimation2 1s ease-in-out forwards;
+}
+
+
+#sprite1,
+#sprite2 {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+
+}
+
+
+#pk2 {
+    position: absolute;
+    top: 50px;
+    left: 400px;
+    /* border: 2px solid #000; */
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.attack-btn {
+    width: 220px;
+    height: 70px;
+    border-radius: 3px;
+    border: 2px solid #000000;
+    background: #F3FDD0;
+    padding: 0px 10px;
+    font-family: "Press Start 2P";
+    font-size: 12px;
+}
+
+.switch-btn {
+    margin-top: 10px;
+    width: 180px;
+    height: 40px;
+    border-radius: 3px;
+    border: 2px solid #000;
+    background: #F3FDD0;
+    /* background: #fdc1aa; */
+    /* padding: 0px 10px; */
+    font-family: "Press Start 2P";
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#p2monwrapper,
+#p1monwrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.attack-btn:hover,
+.switch-btn:hover {
+    background: #d8e99d;
+    /* Hover state */
+}
+
+.attack-btn:active,
+.switch-btn:active {
+    background: #c9e46a;
+    /* Click state */
+}
+
+.move_info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 20px;
+    align-items: center;
+}
+
+.type_info {
+    color: #F3FDD0;
+    background-color: #757575;
+    padding: 5px 5px;
+}

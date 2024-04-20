@@ -172,6 +172,11 @@ async function spawn_pokemon(){
 }
 
 async function startGame() {
+    let audio = document.getElementById('btnclicksound');
+    const bgMusic = new Audio('bw-rival.mp3');
+    bgMusic.loop = true;
+    // bgMusic.muted = true;
+    
     let commentQueue = [];
     let player1mons = [null, null, null, null];
     let player2mons = [null, null, null, null];
@@ -249,12 +254,19 @@ async function startGame() {
     let justfainted = false;
     let justfainted1 = false;
     let justfainted2 = false;
+
+    document.getElementById("mainbtn").addEventListener('click',function(){
+        bgMusic.play();
+        document.getElementById('screen').style.display = 'none';
+    })
+
     function listners1move(){
     for (let i = 0; i < 4; i++) {
         (function(index) {
             document.getElementById('p1_move'+(index+1)).addEventListener('click', function(){
                 if (pokemon2.moves_pp[pokemon2.moves[index].name]>0){
                     player1pressed = true;
+                    audio.play();
                     move1 = pokemon1.moves[index];
                 }
                 else{
@@ -274,6 +286,7 @@ async function startGame() {
             document.getElementById('p2_move'+(index+1)).addEventListener('click', function(){
                 if (pokemon2.moves_pp[pokemon2.moves[index].name]>0){
                 player2pressed = true;
+                audio.play();
                 move2 = pokemon2.moves[index];
                 }
                 else{
@@ -296,6 +309,7 @@ async function startGame() {
                 else{
                     if (justfainted1){
                         removelistners2();
+                        audio.play();
                         switchPokemon(player1mons[index],1);
                         justfainted1 = false;
                         setTimeout(() => {
@@ -307,6 +321,7 @@ async function startGame() {
                         if (!player1changing){
                             player1pressed = true;
                             player1changing = true;
+                            audio.play();
                             lastclickedby1 = player1mons[index];
                             checkButtons();
                         }
@@ -332,6 +347,7 @@ async function startGame() {
                         removelistners1();
                         switchPokemon(player2mons[index],2);
                         justfainted2 = false;
+                        audio.play();
                         setTimeout(() => {
                             listners1mon();
                             listners1move();
@@ -341,6 +357,7 @@ async function startGame() {
                         if (!player2changing){
                             player2pressed = true;
                             player2changing = true;
+                            audio.play();
                             lastclickedby2 = player2mons[index];
                             checkButtons();
                         }

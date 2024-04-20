@@ -30,6 +30,7 @@ class Pokemon {
         this.attack = null;
         this.defense = null;
         this.speed = null;
+        this.stats = {};
         this.type = null;
         this.moves_pp = {};
         this.index =1;
@@ -58,14 +59,37 @@ class Pokemon {
 
     async setdata() {
         let hp = this.data.stats[0];
+        this.stats["attack"] = {
+            name: "attack",
+            total_value: this.data.stats[1],
+            stat_state: 0
+        };
+        this.stats["defense"] ={
+            name: "defense",
+            total_value: this.data.stats[2],
+            stat_state: 0
+        };
+        this.stats["special-attack"] ={
+            name: "special_attack",
+            total_value: this.data.stats[3],
+            stat_state: 0
+        };
+        this.stats["special_defense"] ={
+            name: "special_defense",
+            total_value: this.data.stats[4],
+            stat_state: 0
+        };
+        this.stats["speed"] ={
+            name: "speed",
+            total_value: this.data.stats[5],
+            stat_state: 0
+        };
         let attack = this.data.stats[1];
         let defense = this.data.stats[2];
         let special_attack = this.data.stats[3];
         let special_defense = this.data.stats[4];
         let speed = this.data.stats[5];
-        //(floor(0.01 x (2 x Base + IV + floor(0.25 x EV)) x Level) + 5)
         this.total_hp = Math.floor(0.01*(2*hp.base_stat+Math.floor(0.25*hp.effort))+this.level+10);
-        // this.attack = Math.floor(0.01*(2*attack.base_stat+Math.floor(0.25*attack.effort))*this.level+5);
         this.attack = this.set_stat(attack);
         this.defense = this.set_stat(defense);
         this.special_attack = this.set_stat(special_attack);
@@ -141,12 +165,12 @@ function netEffectiveness(moveType, pokemonTypes) {
 async function spawn_pokemon(){
     const randomPokemonName = random_from_array(pokemons);
     const pokemon = new Pokemon(randomPokemonName);
-    await pokemon.getdata(); // Wait for the data to be fetched
+    await pokemon.getdata();
     await pokemon.setdata();
     await pokemon.fetchMoves();
     return pokemon;
 }
-// let pokemon1,pokemon2;
+
 async function startGame() {
     let commentQueue = [];
     let player1mons = [null, null, null, null];
@@ -184,8 +208,8 @@ async function startGame() {
     }
     updateUI();
 
-    let player1pressed = false; //flag which looks if there is a button pressed by player1
-    let player2pressed = false; //flag whcih looks if there is a button pressed by player2
+    let player1pressed = false;
+    let player2pressed = false;
     let player1changing = false;
     let player2changing = false;
     let lastclickedby1,lastclickedby2;
@@ -196,25 +220,25 @@ async function startGame() {
             const comment = commentQueue[0];
             displayComment(comment);
             setTimeout(() => {
-                commentQueue.shift(); // Remove the displayed comment from the queue
-                processQueue(); // Process the next comment
-            }, 1000); // Adjust the delay as needed
+                commentQueue.shift();
+                processQueue();
+            }, 1000);
         }
     }
-
+    
     function renderbutton(pokemon,move){
         let name = move.name;
         return ('<p>'+capitalize(move.name)+'</p><span class="move_info"><span class="type_info">'+move.type.name.toUpperCase()+'</span>PP: '+pokemon.moves_pp[name]+'/'+move.pp+'</span>');
     }
 
     function displayComment(comment) {
-        document.getElementById('comment').innerHTML = comment; // Display comment in the UI
+        document.getElementById('comment').innerHTML = comment;
     }
 
     function addToQueue(comment) {
-        commentQueue.push(comment); // Add comment to the queue
+        commentQueue.push(comment);
         if (commentQueue.length === 1) {
-            processQueue(); // If it's the only comment in the queue, start processing
+            processQueue();
         }
     }
 
@@ -223,27 +247,46 @@ async function startGame() {
     
     let move1,move2;
     let justfainted = false;
+    let justfainted1 = false;
+    let justfainted2 = false;
+    function listners1move(){
     for (let i = 0; i < 4; i++) {
         (function(index) {
             document.getElementById('p1_move'+(index+1)).addEventListener('click', function(){
-                player1pressed = true;
-                move1 = pokemon1.moves[index];
+                if (pokemon2.moves_pp[pokemon2.moves[index].name]>0){
+                    player1pressed = true;
+                    move1 = pokemon1.moves[index];
+                }
+                else{
+                    addToQueue("Out of PP for this move!");
+                }
                 // alert(capitalize(move1.name));
                 checkButtons();
             });
         })(i);
     }
+    }
+    listners1move();
 
+    function listners2move(){
     for (let i = 0; i < 4; i++) {
         (function(index) {
             document.getElementById('p2_move'+(index+1)).addEventListener('click', function(){
+                if (pokemon2.moves_pp[pokemon2.moves[index].name]>0){
                 player2pressed = true;
                 move2 = pokemon2.moves[index];
+                }
+                else{
+                    addToQueue("Out of PP for this move!");
+                }
                 checkButtons();
             });
         })(i);
     }
+    }
+    listners2move();
 
+    function listners1mon(){
     for (let i = 0; i < 4; i++) {
         (function(index) {
             document.getElementById('p1_pkname'+(index+1)).addEventListener('click', function(){
@@ -251,14 +294,21 @@ async function startGame() {
                         alert('The pokemon is fainted!');
                     }
                 else{
-                    if (justfainted){
+                    if (justfainted1){
+                        removelistners2();
                         switchPokemon(player1mons[index],1);
-                        justfainted = false;
+                        justfainted1 = false;
+                        setTimeout(() => {
+                            listners2mon();
+                            listners2move();
+                        }, 200);
                     }
                     else{
                         if (!player1changing){
+                            player1pressed = true;
                             player1changing = true;
                             lastclickedby1 = player1mons[index];
+                            checkButtons();
                         }
                         
                     }
@@ -267,7 +317,10 @@ async function startGame() {
             });
         })(i);
     }
+}
+    listners1mon();
 
+    function listners2mon(){
     for (let i = 0; i < 4; i++) {
         (function(index) {
             document.getElementById('p2_pkname'+(index+1)).addEventListener('click', function(){
@@ -275,14 +328,21 @@ async function startGame() {
                         alert('The pokemon is fainted!');
                     }
                 else{
-                    if (justfainted){
+                    if (justfainted2){
+                        removelistners1();
                         switchPokemon(player2mons[index],2);
-                        justfainted = false;
+                        justfainted2 = false;
+                        setTimeout(() => {
+                            listners1mon();
+                            listners1move();
+                        }, 200);
                     }
                     else{
                         if (!player2changing){
+                            player2pressed = true;
                             player2changing = true;
                             lastclickedby2 = player2mons[index];
+                            checkButtons();
                         }
                     }
                     
@@ -290,39 +350,86 @@ async function startGame() {
             });
         })(i);
     }
+}
+    listners2mon();
+
+    function removelistners1(){
+        for (let i = 0; i < 4; i++) {
+            const moveButton = document.getElementById('p1_move'+(i+1));
+            const pokemonButton = document.getElementById('p1_pkname'+(i+1));
+    
+            const moveButtonClone = moveButton.cloneNode(true);
+            const pokemonButtonClone = pokemonButton.cloneNode(true);
+    
+            moveButton.parentNode.replaceChild(moveButtonClone, moveButton);
+            pokemonButton.parentNode.replaceChild(pokemonButtonClone, pokemonButton);
+        }
+    }
+
+    function removelistners2(){
+        for (let i = 0; i < 4; i++) {
+            const moveButton = document.getElementById('p2_move'+(i+1));
+            const pokemonButton = document.getElementById('p2_pkname'+(i+1));
+    
+            const moveButtonClone = moveButton.cloneNode(true);
+            const pokemonButtonClone = pokemonButton.cloneNode(true);
+    
+            moveButton.parentNode.replaceChild(moveButtonClone, moveButton);
+            pokemonButton.parentNode.replaceChild(pokemonButtonClone, pokemonButton);
+        }
+    }
     
 
 
 
     function checkButtons(){
-        if (player1pressed && player2pressed){
+        if (player1pressed){
+            removelistners1();
+        }
+
+        if (player2pressed){
+            removelistners2();
+        }
+
+        if ((player1pressed && player2pressed)){
             // alert('itna chala');
-            turn(pokemon1,pokemon2,move1,move2);
+            turn(move1,move2);
             player1pressed = false;
             player2pressed = false;
+            listners1mon();
+            listners1move();
+            listners2mon();
+            listners2move();
         }
     }
 
-    function turn(pokemon1,pokemon2,move1,move2){
+    function turn(move1,move2){
         
         // check the speed of both pokemons and then decide which will attack and then pass the id in it
         if (player1changing){
             if (player2changing){
-                switchPokemon(lastclickedby1,1);
-                switchPokemon(lastclickedby2,2);
+                setTimeout(function(){switchPokemon(lastclickedby1,1);},2000);
+                setTimeout(function(){switchPokemon(lastclickedby2,2);},2000);
+                // console.log('11');
+                player1changing = false;
+                player2changing = false;
+                // alert('Both changing');
             }
             else{
                 if (pokemon1.speed>=pokemon2.speed){
                     switchPokemon(lastclickedby1,1);
-                    setTimeout(function(){attack(pokemon2,pokemon1,move2,'1');},2000);
+                    setTimeout(function(){attack(pokemon2,pokemon1,move2,'1');
+                updateUI();},2000);
                 }
                 else{
                     attack(pokemon2,pokemon1,move2,'1');
+                    updateUI();
                     if (pokemon1.alive){
                         setTimeout(function(){switchPokemon(lastclickedby1,1);},2000);
-                        
                     }
                 }
+                player1changing=false;
+                // alert('1 changing');
                 
             }
         }
@@ -330,27 +437,35 @@ async function startGame() {
             if (player2changing){
                 if (pokemon2.speed>=pokemon1.speed){
                     switchPokemon(lastclickedby2,2);
-                    setTimeout(function(){attack(pokemon1,pokemon2,move1,'2');},2000);
+                    setTimeout(function(){attack(pokemon1,pokemon2,move1,'2');
+                updateUI();},2000);
                 }
                 else{
                     attack(pokemon1,pokemon2,move1,'2');
+                    updateUI();
                     if (pokemon2.alive){
                         setTimeout(function(){switchPokemon(lastclickedby2,2);},2000);
                     }
                 }
+                player2changing=false;
+                // alert('2 changing');
             }
             else{
                 if (pokemon1.speed>=pokemon2.speed){
                     attack(pokemon1,pokemon2,move1,'2');
+                    updateUI();
                     if (pokemon2.alive){
-                        setTimeout(function(){attack(pokemon2,pokemon1,move2,'1');},2000);
+                        setTimeout(function(){attack(pokemon2,pokemon1,move2,'1');
+                    updateUI();},2000);
                     }
                     
                 }
                 else{
                     attack(pokemon2,pokemon1,move2,'1');
+                    updateUI();
                     if (pokemon1.alive){
-                        setTimeout(function(){attack(pokemon1,pokemon2,move1,'2');},2000);
+                        setTimeout(function(){attack(pokemon1,pokemon2,move1,'2');
+                    updateUI();},2000);
                     }
                     
                 }
@@ -371,8 +486,17 @@ async function startGame() {
             else{
                 otherid=1;
             }
+            // let moveindex;
+            // for (let i = 0; i < 4; i++) {
+            //     if (attacker.moves[i].name == move.name){
+            //         moveindex = i;
+            //     }
+            // }
             document.getElementById('pk' + otherid).classList.add('attack-animation'+otherid);
+
             addToQueue(capitalize(attacker.data.name) + ' used '+ move.name + ' !');
+            attacker.moves_pp[move.name] -=1;
+            
             if ((Math.floor(Math.random() * 100) + 1)<move.accuracy){
                 let move_damage = damage(move,attacker,defender);
                 move_damage = Math.min(defender.hp,move_damage);
@@ -398,19 +522,36 @@ async function startGame() {
                 document.getElementById('healthg'+id).style.width = ((defender.hp/defender.total_hp)*133)+'px';
                 addToQueue(capitalize(defender.data.name) + ' lost '+ Math.floor(move_damage) + ' HP');
                 document.getElementById('hp'+id).innerHTML = '<p>HP:'+defender.hp+'/'+defender.total_hp+'</p>';
-                setTimeout(() => {
-                    document.getElementById('pk' + otherid).classList.remove('attack-animation'+otherid);
-                }, 1000);
+                
             }
             else{
                 addToQueue('Attack Missed!');
             }
+            setTimeout(() => {
+                document.getElementById('pk' + otherid).classList.remove('attack-animation'+otherid);
+            }, 1000);
             
-            checkfainted(defender,id);
+            checkfainted(defender,id,otherid);
         }
     }
 
-    function checkfainted(defender,id){
+    const statStageMultiplierMap = new Map([
+        [-6, 0.25],
+        [-5, 0.28],
+        [-4, 0.33],
+        [-3, 0.40],
+        [-2, 0.50],
+        [-1, 0.66],
+        [0, 1],
+        [1, 1.5],
+        [2, 2],
+        [3, 2.5],
+        [4, 3],
+        [5, 3.5],
+        [6, 4]
+    ]);
+
+    function checkfainted(defender,id,otherid){
         if (defender.hp <=0){
             addToQueue(capitalize(defender.data.name)+' Fainted!');
             defender.alive = false;
@@ -419,24 +560,45 @@ async function startGame() {
             addToQueue('Player'+id+' select another pokemon');
             document.getElementById('p'+id+'_pkname'+defender.index).style.background = '#fdc1aa';
             justfainted=true;
+            if (id==1){
+                justfainted1=true;
+            }
+            else{
+                justfainted2=true;
+            }
+            checkgameOver(defender,id,otherid);
         }
         
 
     }
 
-    function switchPokemon(selectedpk,id) { //id is of the side which fainted
+    function checkgameOver(defender,id,otherid){
+        let sum = 0;
+        for (let i = 0; i < 4; i++) {
+            if (id==1){
+                sum += player1mons[i].hp;
+            }
+            else{
+                sum+=player2mons[i].hp;
+            }
+        }
+        if(sum<1){
+            addToQueue('GAME OVER! Player'+otherid+' won the battle!')
+        }
+    }
+
+    function switchPokemon(selectedpk,id) {
         if (id==1){
-            pokemon1 = selectedpk;
+            pokemon1 = player1mons[selectedpk.index-1];
             updateUI();
             
         }
         else{
-            pokemon2 = selectedpk;
+            pokemon2 = player2mons[selectedpk.index-1];
             updateUI();
         }
+        addToQueue('Player'+id+' changed to '+capitalize(selectedpk.data.name));
         setTimeout(() => {
-            document.getElementById('pk' + id).classList.add('switch-animation');
-            document.getElementById('player' + id).classList.add('switch-animation');
             document.getElementById('pk' + id).classList.remove('faint-animation');
             document.getElementById('player' + id).classList.remove('faint-animation');
         }, 1000);
@@ -445,6 +607,6 @@ async function startGame() {
 
 }
 
-// Call startGame to begin the game
+
+
 startGame();
-// alert('Hi');

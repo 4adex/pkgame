@@ -173,7 +173,7 @@ async function spawn_pokemon(){
 
 async function startGame() {
     let audio = document.getElementById('btnclicksound');
-    const bgMusic = new Audio('bw-rival.mp3');
+    const bgMusic = new Audio('/assets/bw-rival.mp3');
     bgMusic.loop = true;
     // bgMusic.muted = true;
     

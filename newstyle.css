@@ -127,6 +127,10 @@ background: #DBEC9E;
     background: #3A2836;
 }
 
+#hpimg{
+    position: absolute;
+}
+
 #healthg2,
 #healthg1 {
     position: absolute;

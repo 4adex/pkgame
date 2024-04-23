@@ -619,7 +619,7 @@ async function startGame() {
         setTimeout(() => {
             document.getElementById('pk' + id).classList.remove('faint-animation');
             document.getElementById('player' + id).classList.remove('faint-animation');
-        }, 1000);
+        }, 10);
         
     }
 

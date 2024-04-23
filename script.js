@@ -256,6 +256,7 @@ async function startGame() {
     let justfainted2 = false;
 
     document.getElementById("load-info").innerHTML = 'Done you can play now!';
+    document.getElementById("mainbtn").style.display = 'block';
     document.getElementById("mainbtn").addEventListener('click',function(){
         bgMusic.play();
         document.getElementById('screen').style.display = 'none';

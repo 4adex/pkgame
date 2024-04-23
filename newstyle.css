@@ -265,6 +265,11 @@ background: #DBEC9E;
     font-size: 12px;
 }
 
+#mainbtn{
+    display: none;
+}
+
+
 .switch-btn {
     margin-top: 10px;
     width: 180px;

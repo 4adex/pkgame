@@ -29,6 +29,11 @@ html {
     z-index: 1;
 }
 
+#mob-info{
+    display: none;
+    max-width: 600px;
+    line-height:1.5rem;
+}
 
 #opening-content {
     margin-top: 100px;
@@ -319,4 +324,11 @@ background: #DBEC9E;
     color: #F3FDD0;
     background-color: #757575;
     padding: 5px 5px;
+}
+
+
+@media only screen and (max-width: 600px)  {
+    #mob-info{
+        display: block;
+    }
 }
